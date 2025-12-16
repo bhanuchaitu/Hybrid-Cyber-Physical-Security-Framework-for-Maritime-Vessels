@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Prediction Result - Maritime IDS{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg">
+                <div class="card-header {% if 'Normal' in output %}bg-success{% else %}bg-danger{% endif %} text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-chart-line"></i> Analysis Result
+                    </h3>
+                </div>
+                <div class="card-body p-5">
+                    {% if 'Normal' in output %}
+                        <div class="text-center mb-4">
+                            <i class="fas fa-check-circle text-success" style="font-size: 5rem;"></i>
+                        </div>
+                    {% else %}
+                        <div class="text-center mb-4">
+                            <i class="fas fa-exclamation-triangle text-danger" style="font-size: 5rem;"></i>
+                        </div>
+                    {% endif %}
+
+                    <div class="alert {% if 'Normal' in output %}alert-success{% else %}alert-danger{% endif %} text-center">
+                        <h4>{{ attack_type if attack_type else 'Unknown' }}</h4>
+                        <p class="mb-0">{{ output }}</p>
+                    </div>
+
+                    {% if timestamp %}
+                        <p class="text-center text-muted">
+                            <small><i class="fas fa-clock"></i> {{ timestamp }}</small>
+                        </p>
+                    {% endif %}
+
+                    <div class="row mt-4">
+                        <div class="col-md-6 mb-2">
+                            <a href="{{ url_for('predict_page') }}" class="btn btn-primary w-100">
+                                <i class="fas fa-redo"></i> Analyze Another
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <a href="{{ url_for('home') }}" class="btn btn-secondary w-100">
+                                <i class="fas fa-home"></i> Back to Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommendations -->
+            {% if 'Attack' in output %}
+                <div class="card mt-4">
+                    <div class="card-header bg-warning">
+                        <h5 class="mb-0"><i class="fas fa-lightbulb"></i> Recommended Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="mb-0">
+                            <li>Isolate affected network segments immediately</li>
+                            <li>Review system logs for suspicious activity</li>
+                            <li>Update firewall rules to block malicious traffic</li>
+                            <li>Notify security team and relevant personnel</li>
+                            <li>Document the incident for compliance reporting</li>
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

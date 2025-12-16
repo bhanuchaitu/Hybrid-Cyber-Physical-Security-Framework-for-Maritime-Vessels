@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detection Threshold Configuration</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+            transform: translateY(-2px);
+        }
+
+        .config-panels {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .panel h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .config-group {
+            margin-bottom: 20px;
+        }
+
+        .config-group h3 {
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .config-item {
+            margin-bottom: 15px;
+        }
+
+        .config-item label {
+            display: block;
+            color: #666;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+
+        .config-item input[type="number"],
+        .config-item input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .config-item input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .config-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .status-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease;
+            z-index: 1000;
+        }
+
+        .status-success {
+            background: #27ae60;
+        }
+
+        .status-error {
+            background: #e74c3c;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .modified {
+            border-color: #f39c12 !important;
+            background-color: #fff3cd;
+        }
+
+        .info-tooltip {
+            display: inline-block;
+            margin-left: 5px;
+            color: #667eea;
+            cursor: help;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-sliders-h"></i> Detection Threshold Configuration</h1>
+            <p>Fine-tune detection thresholds to balance security and false positive rates</p>
+            <div class="actions">
+                <button class="btn btn-success" onclick="saveThresholds()">
+                    <i class="fas fa-save"></i> Save Configuration
+                </button>
+                <button class="btn btn-secondary" onclick="loadThresholds()">
+                    <i class="fas fa-sync-alt"></i> Reload
+                </button>
+                <button class="btn btn-danger" onclick="resetToDefaults()">
+                    <i class="fas fa-undo"></i> Reset to Defaults
+                </button>
+                <button class="btn btn-primary" onclick="window.location.href='/maritime'">
+                    <i class="fas fa-ship"></i> Back to Dashboard
+                </button>
+            </div>
+        </div>
+
+        <div class="config-panels">
+            <!-- GPS Spoofing Detector -->
+            <div class="panel">
+                <h2><i class="fas fa-satellite"></i> GPS Spoofing Detector</h2>
+                
+                <div class="config-group">
+                    <h3>Speed & Acceleration</h3>
+                    <div class="config-item">
+                        <label>Max Speed (knots) <i class="fas fa-info-circle info-tooltip" title="Maximum realistic speed for merchant vessels"></i></label>
+                        <input type="number" id="gps_max_speed" step="0.1" onchange="markModified(this)">
+                    </div>
+                    <div class="config-item">
+                        <label>Max Acceleration (knots/sec) <i class="fas fa-info-circle info-tooltip" title="Maximum realistic acceleration"></i></label>
+                        <input type="number" id="gps_max_acceleration" step="0.01" onchange="markModified(this)">
+                    </div>
+                    <div class="config-item">
+                        <label>Speed Threshold Multiplier <i class="fas fa-info-circle info-tooltip" title="Allow X times over max speed before flagging"></i></label>
+                        <input type="number" id="gps_speed_multiplier" step="0.1" onchange="markModified(this)">
+                    </div>
+                </div>
+
+                <div class="config-group">
+                    <h3>Position Tracking</h3>
+                    <div class="config-item">
+                        <label>Position Jump Threshold (km) <i class="fas fa-info-circle info-tooltip" title="Maximum realistic movement distance"></i></label>
+                        <input type="number" id="gps_position_jump" step="1" onchange="markModified(this)">
+                    </div>
+                    <div class="config-item">
+                        <label>Min Time Between Positions (sec) <i class="fas fa-info-circle info-tooltip" title="Minimum time between position updates"></i></label>
+                        <input type="number" id="gps_min_time" step="0.1" onchange="markModified(this)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- AIS Anomaly Detector -->
+            <div class="panel">
+                <h2><i class="fas fa-broadcast-tower"></i> AIS Anomaly Detector</h2>
+                
+                <div class="config-group">
+                    <h3>MMSI Validation</h3>
+                    <div class="config-item">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="ais_check_pattern" onchange="markModified(this)">
+                            Check for suspicious MMSI patterns
+                        </label>
+                    </div>
+                    <div class="config-item">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="ais_check_country" onchange="markModified(this)">
+                            Validate country codes
+                        </label>
+                    </div>
+                    <div class="config-item">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="ais_allow_test" onchange="markModified(this)">
+                            Allow test MMSI numbers
+                        </label>
+                    </div>
+                </div>
+
+                <div class="config-group">
+                    <h3>Speed Limits by Vessel Type (knots)</h3>
+                    <div class="config-item">
+                        <label>Cargo</label>
+                        <input type="number" id="ais_speed_cargo" step="0.5" onchange="markModified(this)">
+                    </div>
+                    <div class="config-item">
+                        <label>Tanker</label>
+                        <input type="number" id="ais_speed_tanker" step="0.5" onchange="markModified(this)">
+                    </div>
+                    <div class="config-item">
+                        <label>Passenger</label>
+                        <input type="number" id="ais_speed_passenger" step="0.5" onchange="markModified(this)">
+                    </div>
+                    <div class="config-item">
+                        <label>Fishing</label>
+                        <input type="number" id="ais_speed_fishing" step="0.5" onchange="markModified(this)">
+                    </div>
+                    <div class="config-item">
+                        <label>Tug</label>
+                        <input type="number" id="ais_speed_tug" step="0.5" onchange="markModified(this)">
+                    </div>
+                </div>
+
+                <div class="config-group">
+                    <h3>Anomaly Detection</h3>
+                    <div class="config-item">
+                        <label>Heading Mismatch Threshold (degrees)</label>
+                        <input type="number" id="ais_heading_threshold" step="1" onchange="markModified(this)">
+                    </div>
+                    <div class="config-item">
+                        <label>Anomaly Confidence Threshold</label>
+                        <input type="number" id="ais_confidence_threshold" step="0.05" min="0" max="1" onchange="markModified(this)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- NMEA Protocol Validator -->
+            <div class="panel">
+                <h2><i class="fas fa-shield-alt"></i> NMEA Protocol Validator</h2>
+                
+                <div class="config-group">
+                    <h3>Validation Settings</h3>
+                    <div class="config-item">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="nmea_require_checksum" onchange="markModified(this)">
+                            Require valid checksums
+                        </label>
+                    </div>
+                    <div class="config-item">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="nmea_allow_proprietary" onchange="markModified(this)">
+                            Allow proprietary sentences
+                        </label>
+                    </div>
+                </div>
+
+                <div class="config-group">
+                    <h3>Risk Scoring</h3>
+                    <div class="config-item">
+                        <label>Invalid Checksum Risk</label>
+                        <input type="number" id="nmea_risk_checksum" step="0.05" min="0" max="1" onchange="markModified(this)">
+                    </div>
+                    <div class="config-item">
+                        <label>Malformed Structure Risk</label>
+                        <input type="number" id="nmea_risk_malformed" step="0.05" min="0" max="1" onchange="markModified(this)">
+                    </div>
+                    <div class="config-item">
+                        <label>High Risk Command</label>
+                        <input type="number" id="nmea_risk_command" step="0.05" min="0" max="1" onchange="markModified(this)">
+                    </div>
+                    <div class="config-item">
+                        <label>Risk Threshold</label>
+                        <input type="number" id="nmea_risk_threshold" step="0.05" min="0" max="1" onchange="markModified(this)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Physics-Informed IDS -->
+            <div class="panel">
+                <h2><i class="fas fa-brain"></i> Physics-Informed IDS</h2>
+                
+                <div class="config-group">
+                    <h3>Threat Levels</h3>
+                    <div class="config-item">
+                        <label>Critical Threshold</label>
+                        <input type="number" id="ids_threat_critical" step="0.05" min="0" max="1" onchange="markModified(this)">
+                    </div>
+                    <div class="config-item">
+                        <label>High Threshold</label>
+                        <input type="number" id="ids_threat_high" step="0.05" min="0" max="1" onchange="markModified(this)">
+                    </div>
+                    <div class="config-item">
+                        <label>Medium Threshold</label>
+                        <input type="number" id="ids_threat_medium" step="0.05" min="0" max="1" onchange="markModified(this)">
+                    </div>
+                    <div class="config-item">
+                        <label>Low Threshold</label>
+                        <input type="number" id="ids_threat_low" step="0.05" min="0" max="1" onchange="markModified(this)">
+                    </div>
+                </div>
+
+                <div class="config-group">
+                    <h3>Cross-Layer Correlation</h3>
+                    <div class="config-item">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="ids_correlation_enabled" onchange="markModified(this)">
+                            Enable cross-layer correlation
+                        </label>
+                    </div>
+                    <div class="config-item">
+                        <label>Min Layers for Critical</label>
+                        <input type="number" id="ids_min_layers" step="1" min="1" max="5" onchange="markModified(this)">
+                    </div>
+                    <div class="config-item">
+                        <label>Confidence Boost Per Layer</label>
+                        <input type="number" id="ids_confidence_boost" step="0.05" min="0" max="0.5" onchange="markModified(this)">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentConfig = {};
+        let modifiedFields = new Set();
+
+        // Load thresholds on page load
+        window.addEventListener('DOMContentLoaded', loadThresholds);
+
+        async function loadThresholds() {
+            try {
+                const response = await fetch('/api/thresholds');
+                if (!response.ok) throw new Error('Failed to load thresholds');
+                
+                currentConfig = await response.json();
+                populateFields(currentConfig);
+                modifiedFields.clear();
+                showStatus('Configuration loaded successfully', 'success');
+            } catch (error) {
+                showStatus('Error loading configuration: ' + error.message, 'error');
+            }
+        }
+
+        function populateFields(config) {
+            // GPS Thresholds
+            document.getElementById('gps_max_speed').value = config.gps.max_speed_knots;
+            document.getElementById('gps_max_acceleration').value = config.gps.max_acceleration_knots_per_sec;
+            document.getElementById('gps_speed_multiplier').value = config.gps.speed_threshold_multiplier;
+            document.getElementById('gps_position_jump').value = config.gps.position_jump_threshold_km;
+            document.getElementById('gps_min_time').value = config.gps.min_time_between_positions_sec;
+
+            // AIS Thresholds
+            document.getElementById('ais_check_pattern').checked = config.ais.mmsi_validation.check_pattern;
+            document.getElementById('ais_check_country').checked = config.ais.mmsi_validation.check_country_code;
+            document.getElementById('ais_allow_test').checked = config.ais.mmsi_validation.allow_test_mmsi;
+            document.getElementById('ais_speed_cargo').value = config.ais.speed_limits.cargo;
+            document.getElementById('ais_speed_tanker').value = config.ais.speed_limits.tanker;
+            document.getElementById('ais_speed_passenger').value = config.ais.speed_limits.passenger;
+            document.getElementById('ais_speed_fishing').value = config.ais.speed_limits.fishing;
+            document.getElementById('ais_speed_tug').value = config.ais.speed_limits.tug;
+            document.getElementById('ais_heading_threshold').value = config.ais.heading_mismatch_threshold_degrees;
+            document.getElementById('ais_confidence_threshold').value = config.ais.anomaly_confidence_threshold;
+
+            // NMEA Thresholds
+            document.getElementById('nmea_require_checksum').checked = config.nmea.require_checksum;
+            document.getElementById('nmea_allow_proprietary').checked = config.nmea.allow_proprietary_sentences;
+            document.getElementById('nmea_risk_checksum').value = config.nmea.risk_scoring.invalid_checksum;
+            document.getElementById('nmea_risk_malformed').value = config.nmea.risk_scoring.malformed_structure;
+            document.getElementById('nmea_risk_command').value = config.nmea.risk_scoring.high_risk_command;
+            document.getElementById('nmea_risk_threshold').value = config.nmea.risk_threshold;
+
+            // IDS Thresholds
+            document.getElementById('ids_threat_critical').value = config.ids.threat_levels.critical;
+            document.getElementById('ids_threat_high').value = config.ids.threat_levels.high;
+            document.getElementById('ids_threat_medium').value = config.ids.threat_levels.medium;
+            document.getElementById('ids_threat_low').value = config.ids.threat_levels.low;
+            document.getElementById('ids_correlation_enabled').checked = config.ids.cross_layer_correlation.enabled;
+            document.getElementById('ids_min_layers').value = config.ids.cross_layer_correlation.min_layers_for_critical;
+            document.getElementById('ids_confidence_boost').value = config.ids.cross_layer_correlation.confidence_boost_per_layer;
+        }
+
+        async function saveThresholds() {
+            try {
+                const updatedConfig = buildConfigFromFields();
+                
+                const response = await fetch('/api/thresholds', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(updatedConfig)
+                });
+
+                if (!response.ok) throw new Error('Failed to save thresholds');
+                
+                currentConfig = updatedConfig;
+                modifiedFields.clear();
+                document.querySelectorAll('.modified').forEach(el => el.classList.remove('modified'));
+                showStatus('Configuration saved successfully!', 'success');
+            } catch (error) {
+                showStatus('Error saving configuration: ' + error.message, 'error');
+            }
+        }
+
+        function buildConfigFromFields() {
+            return {
+                gps: {
+                    max_speed_knots: parseFloat(document.getElementById('gps_max_speed').value),
+                    max_acceleration_knots_per_sec: parseFloat(document.getElementById('gps_max_acceleration').value),
+                    speed_threshold_multiplier: parseFloat(document.getElementById('gps_speed_multiplier').value),
+                    position_jump_threshold_km: parseFloat(document.getElementById('gps_position_jump').value),
+                    min_time_between_positions_sec: parseFloat(document.getElementById('gps_min_time').value),
+                },
+                ais: {
+                    mmsi_validation: {
+                        check_pattern: document.getElementById('ais_check_pattern').checked,
+                        check_country_code: document.getElementById('ais_check_country').checked,
+                        allow_test_mmsi: document.getElementById('ais_allow_test').checked,
+                    },
+                    speed_limits: {
+                        cargo: parseFloat(document.getElementById('ais_speed_cargo').value),
+                        tanker: parseFloat(document.getElementById('ais_speed_tanker').value),
+                        passenger: parseFloat(document.getElementById('ais_speed_passenger').value),
+                        fishing: parseFloat(document.getElementById('ais_speed_fishing').value),
+                        tug: parseFloat(document.getElementById('ais_speed_tug').value),
+                        unknown: 20.0,
+                    },
+                    heading_mismatch_threshold_degrees: parseFloat(document.getElementById('ais_heading_threshold').value),
+                    anomaly_confidence_threshold: parseFloat(document.getElementById('ais_confidence_threshold').value),
+                },
+                nmea: {
+                    require_checksum: document.getElementById('nmea_require_checksum').checked,
+                    allow_proprietary_sentences: document.getElementById('nmea_allow_proprietary').checked,
+                    high_risk_commands: ['ROT', 'RMB', 'APB', 'APA'],
+                    risk_scoring: {
+                        invalid_checksum: parseFloat(document.getElementById('nmea_risk_checksum').value),
+                        malformed_structure: parseFloat(document.getElementById('nmea_risk_malformed').value),
+                        high_risk_command: parseFloat(document.getElementById('nmea_risk_command').value),
+                        proprietary_sentence: 0.3,
+                        unknown_sentence_type: 0.2,
+                    },
+                    risk_threshold: parseFloat(document.getElementById('nmea_risk_threshold').value),
+                },
+                ids: {
+                    threat_levels: {
+                        critical: parseFloat(document.getElementById('ids_threat_critical').value),
+                        high: parseFloat(document.getElementById('ids_threat_high').value),
+                        medium: parseFloat(document.getElementById('ids_threat_medium').value),
+                        low: parseFloat(document.getElementById('ids_threat_low').value),
+                    },
+                    cross_layer_correlation: {
+                        enabled: document.getElementById('ids_correlation_enabled').checked,
+                        min_layers_for_critical: parseInt(document.getElementById('ids_min_layers').value),
+                        confidence_boost_per_layer: parseFloat(document.getElementById('ids_confidence_boost').value),
+                    },
+                    attack_classification: {
+                        gps_spoofing: {
+                            min_position_jump_km: 50.0,
+                            min_speed_violation_multiplier: 1.5,
+                        },
+                        ais_spoofing: {
+                            min_mmsi_violations: 1,
+                        },
+                        nmea_injection: {
+                            min_risk_score: 0.5,
+                        },
+                    },
+                },
+            };
+        }
+
+        async function resetToDefaults() {
+            if (!confirm('Are you sure you want to reset all thresholds to default values?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/thresholds/reset', {method: 'POST'});
+                if (!response.ok) throw new Error('Failed to reset thresholds');
+                
+                await loadThresholds();
+                showStatus('Configuration reset to defaults', 'success');
+            } catch (error) {
+                showStatus('Error resetting configuration: ' + error.message, 'error');
+            }
+        }
+
+        function markModified(element) {
+            element.classList.add('modified');
+            modifiedFields.add(element.id);
+        }
+
+        function showStatus(message, type) {
+            const existingStatus = document.querySelector('.status-message');
+            if (existingStatus) existingStatus.remove();
+
+            const status = document.createElement('div');
+            status.className = `status-message status-${type}`;
+            status.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+            document.body.appendChild(status);
+
+            setTimeout(() => status.remove(), 3000);
+        }
+    </script>
+</body>
+</html>

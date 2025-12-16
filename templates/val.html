@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}OTP Verification - Maritime IDS{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center min-vh-75 align-items-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-lg">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-envelope-open-text fa-3x text-primary mb-3"></i>
+                        <h2>Verify OTP</h2>
+                        <p class="text-muted">We've sent a verification code to your email</p>
+                        {% if email %}
+                            <p class="small"><strong>{{ email }}</strong></p>
+                        {% endif %}
+                    </div>
+
+                    {% if error %}
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-circle"></i> {{ error }}
+                        </div>
+                    {% endif %}
+
+                    <form method="POST" action="{{ url_for('verify_otp') }}">
+                        <input type="hidden" name="email" value="{{ email }}">
+                        
+                        <div class="mb-4">
+                            <label for="otp" class="form-label text-center d-block">
+                                <i class="fas fa-key"></i> Enter OTP
+                            </label>
+                            <input type="text" class="form-control form-control-lg text-center" 
+                                   id="otp" name="otp" required maxlength="4" 
+                                   pattern="[0-9]{4}" placeholder="••••"
+                                   style="letter-spacing: 1rem; font-size: 2rem;">
+                            <div class="form-text text-center">4-digit code</div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
+                            <i class="fas fa-check-circle"></i> Verify & Complete Signup
+                        </button>
+
+                        <div class="text-center">
+                            <p class="small text-muted mb-0">
+                                Didn't receive the code?
+                                <a href="{{ url_for('logon') }}">Resend OTP</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-focus on OTP input
+document.getElementById('otp').focus();
+
+// Auto-submit when 4 digits entered
+document.getElementById('otp').addEventListener('input', function(e) {
+    if (this.value.length === 4) {
+        this.form.submit();
+    }
+});
+</script>
+{% endblock %}

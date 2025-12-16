@@ -1,0 +1,882 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Maritime IDS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-container {
+        background: #f8f9fa;
+        min-height: 100vh;
+    }
+
+    .stat-card {
+        border: 1px solid #e3e6ea;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
+        background: white;
+        height: 100%;
+    }
+    
+    .stat-card:hover {
+        border-color: #d0d4d9;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .stat-card .card-body {
+        padding: 1.5rem;
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        line-height: 1;
+        margin: 0.5rem 0 0.25rem 0;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0;
+    }
+
+    .stat-description {
+        font-size: 0.75rem;
+        color: #6c757d;
+        margin-top: 0.5rem;
+    }
+
+    .welcome-header {
+        background: white;
+        border: 1px solid #e3e6ea;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .welcome-header h1 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: #212529;
+        margin-bottom: 0.5rem;
+    }
+
+    .welcome-header p {
+        color: #6c757d;
+        margin: 0;
+    }
+
+    .section-card {
+        background: white;
+        border: 1px solid #e3e6ea;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        height: 100%;
+    }
+
+    .section-card .card-header {
+        background: #fafbfc;
+        border-bottom: 1px solid #e3e6ea;
+        border-radius: 8px 8px 0 0;
+        padding: 1rem 1.5rem;
+    }
+
+    .section-card .card-header h5 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #212529;
+        margin: 0;
+    }
+
+    .action-btn {
+        background: white;
+        border: 1px solid #e3e6ea;
+        border-radius: 6px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        text-align: left;
+        transition: all 0.2s ease;
+        color: #495057;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+    }
+
+    .action-btn:hover {
+        background: #f8f9fa;
+        border-color: #0066cc;
+        color: #0066cc;
+        text-decoration: none;
+        box-shadow: 0 1px 3px rgba(0, 102, 204, 0.1);
+    }
+
+    .action-btn i {
+        font-size: 1.25rem;
+        margin-right: 1rem;
+        width: 24px;
+        text-align: center;
+    }
+
+    .action-btn-title {
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 0;
+    }
+
+    .action-btn-desc {
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin: 0;
+    }
+
+    .alerts-table {
+        margin: 0;
+    }
+
+    .alerts-table thead th {
+        background: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: #495057;
+        padding: 0.75rem;
+    }
+
+    .status-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1px;e3e6ea;
+        border-radius: 0 0 8px 8px;
+        overflow: hidden;
+    }
+
+    .status-item {
+        background: white;
+        padding: 1.5rem;
+        text-align: center;
+        border-top: 1px solid #e3e6ea
+        text-align: center;
+    }
+
+    .status-icon {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: #28a745;
+    }
+
+    .status-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #212529;
+        margin-bottom: 0.25rem;
+    }
+
+    .status-value {
+        font-size: 0.75rem;
+        color: #6c757d;
+    }
+
+    .badge-status {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="container-fluid py-4">
+        <!-- Welcome Section -->
+        <div class="welcome-header">
+            <h1>Security Dashboard</h1>
+            <p>Welcome back, <strong>{{ session.get('username', 'User') }}</strong> · System monitoring active</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6 col-xl-3">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="stat-label">Normal Traffic</div>
+                                <div class="stat-number text-success" id="normalCount">0</div>
+                                <div class="stat-description">
+                                    <i class="fas fa-check-circle text-success me-1"></i>
+                                    System Secure
+                                </div>
+                            </div>
+                            <div class="text-success" style="font-size: 2rem; opacity: 0.2;">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="stat-label">DoS Attacks</div>
+                                <div class="stat-number text-danger" id="dosCount">0</div>
+                                <div class="stat-description">
+                                    <i class="fas fa-shield-alt text-danger me-1"></i>
+                                    Monitored
+                                </div>
+                            </div>
+                            <div class="text-danger" style="font-size: 2rem; opacity: 0.2;">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="stat-label">Probe Attacks</div>
+                                <div class="stat-number text-warning" id="probeCount">0</div>
+                                <div class="stat-description">
+                                    <i class="fas fa-eye text-warning me-1"></i>
+                                    Detected
+                                </div>
+                            </div>
+                            <div class="text-warning" style="font-size: 2rem; opacity: 0.2;">
+                                <i class="fas fa-search"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="stat-label">Other Attacks</div>
+                                <div class="stat-number text-info" id="otherCount">0</div>
+                                <div class="stat-description">
+                                    <i class="fas fa-shield-alt text-info me-1"></i>
+                                    Protected
+                                </div>
+                            </div>
+                            <div class="text-info" style="font-size: 2rem; opacity: 0.2;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Detection Stats -->
+        <div class="row g-3 mb-4">
+            <div class="col-12">
+                <div class="section-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5>Enhanced Detection Capabilities</h5>
+                        <span class="badge bg-success">18 Active Detectors</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <!-- Web Attacks -->
+                            <div class="col-md-6 col-lg-4">
+                                <div class="p-3 border rounded">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-code text-danger me-2" style="font-size: 1.5rem;"></i>
+                                        <div>
+                                            <div class="fw-bold">Web Attacks</div>
+                                            <small class="text-muted">SQL, XSS, Command Injection</small>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="h4 mb-0" id="webAttacksCount">0</span>
+                                        <span class="badge bg-danger" id="webAttacksBadge">Monitoring</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Advanced Threats -->
+                            <div class="col-md-6 col-lg-4">
+                                <div class="p-3 border rounded">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-skull-crossbones text-dark me-2" style="font-size: 1.5rem;"></i>
+                                        <div>
+                                            <div class="fw-bold">Advanced Threats</div>
+                                            <small class="text-muted">MITM, Ransomware, APT</small>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="h4 mb-0" id="advancedThreatsCount">0</span>
+                                        <span class="badge bg-dark" id="advancedThreatsBadge">Protected</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Maritime Threats -->
+                            <div class="col-md-6 col-lg-4">
+                                <div class="p-3 border rounded">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-ship text-primary me-2" style="font-size: 1.5rem;"></i>
+                                        <div>
+                                            <div class="fw-bold">Maritime Threats</div>
+                                            <small class="text-muted">Collision, Cargo, Boarding</small>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="h4 mb-0" id="maritimeThreatsCount">0</span>
+                                        <span class="badge bg-primary" id="maritimeThreatsBadge">Tracking</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Protocol Violations -->
+                            <div class="col-md-6 col-lg-4">
+                                <div class="p-3 border rounded">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-network-wired text-warning me-2" style="font-size: 1.5rem;"></i>
+                                        <div>
+                                            <div class="fw-bold">Protocol Violations</div>
+                                            <small class="text-muted">DNP3, Modbus, CAN Bus</small>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="h4 mb-0" id="protocolViolationsCount">0</span>
+                                        <span class="badge bg-warning" id="protocolViolationsBadge">Validating</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Behavioral Anomalies -->
+                            <div class="col-md-6 col-lg-4">
+                                <div class="p-3 border rounded">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-brain text-info me-2" style="font-size: 1.5rem;"></i>
+                                        <div>
+                                            <div class="fw-bold">Behavioral Anomalies</div>
+                                            <small class="text-muted">AI-powered Detection</small>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="h4 mb-0" id="behavioralAnomaliesCount">0</span>
+                                        <span class="badge bg-info" id="behavioralAnomaliesBadge">Learning</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Total Detections -->
+                            <div class="col-md-6 col-lg-4">
+                                <div class="p-3 border rounded bg-light">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-chart-line text-success me-2" style="font-size: 1.5rem;"></i>
+                                        <div>
+                                            <div class="fw-bold">Total Detections</div>
+                                            <small class="text-muted">All Enhanced Systems</small>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="h4 mb-0" id="totalDetectionsCount">0</span>
+                                        <span class="badge bg-success" id="totalDetectionsBadge">Active</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Row -->
+        <div class="row g-3">
+            <!-- Quick Actions -->
+            <div class="col-lg-4">
+                <div class="section-card">
+                    <div class="card-header">
+                        <h5>Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <a href="{{ url_for('predict_page') }}" class="action-btn">
+                            <i class="fas fa-search text-primary"></i>
+                            <div class="flex-grow-1">
+                                <div class="action-btn-title">Analyze Traffic</div>
+                                <div class="action-btn-desc">Run network analysis</div>
+                            </div>
+                        </a>
+                        <a href="{{ url_for('realtime_monitor') }}" class="action-btn">
+                            <i class="fas fa-chart-line text-success"></i>
+                            <div class="flex-grow-1">
+                                <div class="action-btn-title">Real-Time Monitor</div>
+                                <div class="action-btn-desc">Live threat detection</div>
+                            </div>
+                        </a>
+                        <a href="{{ url_for('maritime_dashboard') }}" class="action-btn">
+                            <i class="fas fa-ship text-primary"></i>
+                            <div class="flex-grow-1">
+                                <div class="action-btn-title">Maritime Security</div>
+                                <div class="action-btn-desc">Vessel monitoring & threats</div>
+                            </div>
+                        </a>
+                        <a href="{{ url_for('alert_history') }}" class="action-btn">
+                            <i class="fas fa-bell text-warning"></i>
+                            <div class="flex-grow-1">
+                                <div class="action-btn-title">Alert Management</div>
+                                <div class="action-btn-desc">View & manage alerts</div>
+                            </div>
+                        </a>
+                        <a href="{{ url_for('reports') }}" class="action-btn">
+                            <i class="fas fa-file-alt text-info"></i>
+                            <div class="flex-grow-1">
+                                <div class="action-btn-title">Security Reports</div>
+                                <div class="action-btn-desc">Analytics & insights</div>
+                            </div>
+                        </a>
+                        <a href="#" class="action-btn" onclick="viewEnhancedStats(); return false;">
+                            <i class="fas fa-shield-alt text-danger"></i>
+                            <div class="flex-grow-1">
+                                <div class="action-btn-title">Enhanced Detection</div>
+                                <div class="action-btn-desc">18 active detectors</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Alerts -->
+            <div class="col-lg-8">
+                <div class="section-card">
+                    <div class="card-header">
+                        <h5>Recent Alerts</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table alerts-table table-hover mb-0" id="alertsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Type</th>
+                                        <th>Severity</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="4" class="text-center py-5">
+                                            <i class="fas fa-check-circle text-success mb-2" style="font-size: 2.5rem;"></i>
+                                            <div class="fw-bold text-dark">No Recent Alerts</div>
+                                            <small class="text-muted">All systems operational</small>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Status -->
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="section-card">
+                    <div class="card-header">
+                        <h5>System Health</h5>
+                    </div>
+                    <div class="status-grid">
+                        <div class="status-item">
+                            <div class="status-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <div class="status-label">ML Models</div>
+                            <div class="status-value">
+                                <span class="badge badge-status bg-success" id="mlModelsStatus">4 Active</span>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="status-label">Enhanced Detection</div>
+                            <div class="status-value">
+                                <span class="badge badge-status bg-success" id="enhancedDetectionStatus">18 Detectors</span>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-icon">
+                                <i class="fas fa-satellite-dish"></i>
+                            </div>
+                            <div class="status-label">Real-Time Monitor</div>
+                            <div class="status-value">
+                                <span class="badge badge-status bg-success" id="monitoringStatus">Active</span>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="status-label">Database</div>
+                            <div class="status-value">
+                                <span class="badge badge-status bg-success">Connected</span>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div class="status-label">Alert System</div>
+                            <div class="status-value">
+                                <span class="badge badge-status bg-success">Enabled</span>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-icon">
+                                <i class="fas fa-ship"></i>
+                            </div>
+                            <div class="status-label">Maritime Monitor</div>
+                            <div class="status-value">
+                                <span class="badge badge-status bg-success" id="maritimeStatus">Ready</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Simulate real-time updates for basic stats
+function updateBasicStats() {
+    document.getElementById('normalCount').textContent = Math.floor(Math.random() * 1000);
+    document.getElementById('dosCount').textContent = Math.floor(Math.random() * 10);
+    document.getElementById('probeCount').textContent = Math.floor(Math.random() * 5);
+    document.getElementById('otherCount').textContent = Math.floor(Math.random() * 3);
+}
+
+// Fetch enhanced detection statistics
+function updateEnhancedStats() {
+    fetch('/api/enhanced/statistics')
+        .then(response => response.json())
+        .then(data => {
+            // Update counts
+            document.getElementById('webAttacksCount').textContent = data.web_attacks || 0;
+            document.getElementById('advancedThreatsCount').textContent = data.advanced_threats || 0;
+            document.getElementById('maritimeThreatsCount').textContent = data.maritime_threats || 0;
+            document.getElementById('protocolViolationsCount').textContent = data.protocol_violations || 0;
+            document.getElementById('behavioralAnomaliesCount').textContent = data.behavioral_anomalies || 0;
+            document.getElementById('totalDetectionsCount').textContent = data.total_detections || 0;
+            
+            // Update badges based on counts
+            updateBadge('webAttacksBadge', data.web_attacks, 'Monitoring', 'Clean');
+            updateBadge('advancedThreatsBadge', data.advanced_threats, 'Protected', 'Threats');
+            updateBadge('maritimeThreatsBadge', data.maritime_threats, 'Tracking', 'Risks');
+            updateBadge('protocolViolationsBadge', data.protocol_violations, 'Validating', 'Violations');
+            updateBadge('behavioralAnomaliesBadge', data.behavioral_anomalies, 'Learning', 'Anomalies');
+            updateBadge('totalDetectionsBadge', data.total_detections, 'Active', 'Detections');
+        })
+        .catch(error => {
+            console.error('Error fetching enhanced stats:', error);
+        });
+}
+
+// Update badge text and color based on count
+function updateBadge(badgeId, count, defaultText, activeText) {
+    const badge = document.getElementById(badgeId);
+    if (count > 0) {
+        badge.textContent = count + ' ' + activeText;
+        badge.className = 'badge bg-danger';
+    } else {
+        badge.textContent = defaultText;
+        badge.className = 'badge bg-success';
+    }
+}
+
+// Fetch and display recent alerts
+function updateAlerts() {
+    fetch('/api/alerts?status=active')
+        .then(response => response.json())
+        .then(data => {
+            const tbody = document.querySelector('#alertsTable tbody');
+            
+            if (data.alerts && data.alerts.length > 0) {
+                // Show only last 5 alerts
+                const recentAlerts = data.alerts.slice(0, 5);
+                tbody.innerHTML = recentAlerts.map(alert => {
+                    const severityClass = {
+                        'CRITICAL': 'danger',
+                        'HIGH': 'warning',
+                        'MEDIUM': 'info',
+                        'INFO': 'secondary'
+                    }[alert.severity] || 'secondary';
+                    
+                    const statusClass = {
+                        'active': 'warning',
+                        'acknowledged': 'info',
+                        'resolved': 'success'
+                    }[alert.status] || 'secondary';
+                    
+                    const time = new Date(alert.timestamp).toLocaleTimeString();
+                    
+                    return `
+                        <tr>
+                            <td><small>${time}</small></td>
+                            <td><strong>${alert.alert_type}</strong></td>
+                            <td><span class="badge bg-${severityClass}">${alert.severity}</span></td>
+                            <td><span class="badge bg-${statusClass}">${alert.status}</span></td>
+                        </tr>
+                    `;
+                }).join('');
+            } else {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center py-5">
+                            <i class="fas fa-check-circle text-success mb-2" style="font-size: 2.5rem;"></i>
+                            <div class="fw-bold text-dark">No Recent Alerts</div>
+                            <small class="text-muted">All systems operational</small>
+                        </td>
+                    </tr>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching alerts:', error);
+        });
+}
+
+// WebSocket connection for real-time updates
+let socket;
+
+function connectWebSocket() {
+    socket = io();
+    
+    socket.on('connect', function() {
+        console.log('WebSocket connected');
+        // Start enhanced detection monitoring
+        socket.emit('enhanced_detection_start');
+    });
+    
+    socket.on('enhanced_stats_update', function(data) {
+        // Update stats from WebSocket
+        document.getElementById('webAttacksCount').textContent = data.web_attacks || 0;
+        document.getElementById('advancedThreatsCount').textContent = data.advanced_threats || 0;
+        document.getElementById('maritimeThreatsCount').textContent = data.maritime_threats || 0;
+        document.getElementById('protocolViolationsCount').textContent = data.protocol_violations || 0;
+        document.getElementById('behavioralAnomaliesCount').textContent = data.behavioral_anomalies || 0;
+        document.getElementById('totalDetectionsCount').textContent = data.total_detections || 0;
+    });
+    
+    socket.on('new_alert', function(alert) {
+        // Refresh alerts when new alert arrives
+        updateAlerts();
+        
+        // Show notification for critical alerts
+        if (alert.severity === 'CRITICAL' || alert.severity === 'HIGH') {
+            showNotification(alert);
+        }
+    });
+    
+    socket.on('advanced_threat_alert', function(threat) {
+        console.log('Advanced threat detected:', threat);
+        updateAlerts();
+    });
+    
+    socket.on('behavioral_anomaly', function(anomaly) {
+        console.log('Behavioral anomaly detected:', anomaly);
+        updateAlerts();
+    });
+    
+    socket.on('geofence_violation', function(violation) {
+        console.log('Geofence violation:', violation);
+        updateAlerts();
+    });
+    
+    socket.on('collision_risk', function(risk) {
+        console.log('Collision risk:', risk);
+        updateAlerts();
+    });
+}
+
+// Show browser notification for critical alerts
+function showNotification(alert) {
+    if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('Security Alert', {
+            body: `${alert.severity}: ${alert.message}`,
+            icon: '/static/images/alert-icon.png',
+            tag: alert.id
+        });
+    }
+}
+
+// Request notification permission
+if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+}
+
+// Initialize updates
+updateBasicStats();
+updateEnhancedStats();
+updateAlerts();
+connectWebSocket();
+
+// Update every 10 seconds
+setInterval(updateBasicStats, 10000);
+setInterval(updateEnhancedStats, 10000);
+setInterval(updateAlerts, 15000);
+
+// Request enhanced stats via WebSocket every 5 seconds
+setInterval(() => {
+    if (socket && socket.connected) {
+        socket.emit('get_enhanced_stats');
+    }
+}, 5000);
+
+// Function to show enhanced detection details modal
+function viewEnhancedStats() {
+    const modal = new bootstrap.Modal(document.getElementById('enhancedDetectionModal'));
+    modal.show();
+    refreshEnhancedDetails();
+}
+
+// Refresh detailed detector status
+function refreshEnhancedDetails() {
+    fetch('/api/enhanced/statistics')
+        .then(response => response.json())
+        .then(data => {
+            // Update web attack detectors (show as Active/Idle based on detections)
+            const sqlStatus = (data.web_attacks > 0) ? `<span class="badge bg-danger">Detected (${data.web_attacks})</span>` : '<span class="badge bg-success">Clean</span>';
+            const xssStatus = '<span class="badge bg-success">Monitoring</span>';
+            const cmdStatus = '<span class="badge bg-success">Monitoring</span>';
+            const pathStatus = '<span class="badge bg-success">Monitoring</span>';
+            
+            document.getElementById('detail-sql').innerHTML = sqlStatus;
+            document.getElementById('detail-xss').innerHTML = xssStatus;
+            document.getElementById('detail-cmd').innerHTML = cmdStatus;
+            document.getElementById('detail-path').innerHTML = pathStatus;
+            
+            // Update advanced threats
+            const mitmStatus = '<span class="badge bg-success">No Threats</span>';
+            const ransomwareStatus = '<span class="badge bg-success">Protected</span>';
+            const aptStatus = '<span class="badge bg-success">No Activity</span>';
+            const zerodayStatus = '<span class="badge bg-success">Monitoring</span>';
+            
+            document.getElementById('detail-mitm').innerHTML = mitmStatus;
+            document.getElementById('detail-ransomware').innerHTML = ransomwareStatus;
+            document.getElementById('detail-apt').innerHTML = aptStatus;
+            document.getElementById('detail-zeroday').innerHTML = zerodayStatus;
+        })
+        .catch(error => console.error('Error refreshing details:', error));
+}
+</script>
+
+<!-- Enhanced Detection Details Modal -->
+<div class="modal fade" id="enhancedDetectionModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-shield-alt me-2"></i>Enhanced Detection System - 18 Active Detectors
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- Web Attack Detectors -->
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100 border-danger">
+                            <div class="card-header bg-danger text-white">
+                                <i class="fas fa-code me-2"></i>Web Attack Detectors (4)
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-2"><strong>SQL Injection:</strong> <span id="detail-sql">-</span></div>
+                                <div class="mb-2"><strong>XSS Detection:</strong> <span id="detail-xss">-</span></div>
+                                <div class="mb-2"><strong>Command Injection:</strong> <span id="detail-cmd">-</span></div>
+                                <div class="mb-2"><strong>Path Traversal:</strong> <span id="detail-path">-</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Advanced Threat Detectors -->
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100 border-dark">
+                            <div class="card-header bg-dark text-white">
+                                <i class="fas fa-skull-crossbones me-2"></i>Advanced Threat Detection (4)
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-2"><strong>MITM Detection:</strong> <span id="detail-mitm">-</span></div>
+                                <div class="mb-2"><strong>Ransomware:</strong> <span id="detail-ransomware">-</span></div>
+                                <div class="mb-2"><strong>APT Detection:</strong> <span id="detail-apt">-</span></div>
+                                <div class="mb-2"><strong>Zero-day:</strong> <span id="detail-zeroday">-</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Maritime Security -->
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100 border-info">
+                            <div class="card-header bg-info text-white">
+                                <i class="fas fa-ship me-2"></i>Maritime Security Systems (6)
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-2"><strong>Collision Prediction:</strong> <span class="badge bg-success">Active</span></div>
+                                <div class="mb-2"><strong>Port Security:</strong> <span class="badge bg-success">Monitoring</span></div>
+                                <div class="mb-2"><strong>Cargo Theft Detection:</strong> <span class="badge bg-success">Protected</span></div>
+                                <div class="mb-2"><strong>Boarding Alert:</strong> <span class="badge bg-success">Armed</span></div>
+                                <div class="mb-2"><strong>Engine Monitoring:</strong> <span class="badge bg-success">Normal</span></div>
+                                <div class="mb-2"><strong>Weather Assessment:</strong> <span class="badge bg-success">Clear</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Protocol Validators -->
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100 border-warning">
+                            <div class="card-header bg-warning text-dark">
+                                <i class="fas fa-network-wired me-2"></i>Protocol Validators (5)
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-2"><strong>DNP3:</strong> <span class="badge bg-success">Validating</span></div>
+                                <div class="mb-2"><strong>Modbus:</strong> <span class="badge bg-success">Validating</span></div>
+                                <div class="mb-2"><strong>CAN Bus:</strong> <span class="badge bg-success">Monitoring</span></div>
+                                <div class="mb-2"><strong>Zigbee/IoT:</strong> <span class="badge bg-success">Protected</span></div>
+                                <div class="mb-2"><strong>Satellite Comms:</strong> <span class="badge bg-success">Secure</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Behavioral Analysis -->
+                    <div class="col-md-12 mb-3">
+                        <div class="card border-primary">
+                            <div class="card-header bg-primary text-white">
+                                <i class="fas fa-brain me-2"></i>AI-Powered Behavioral Analysis (5)
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4 mb-2"><strong>Behavioral Analyzer:</strong> <span class="badge bg-info">Learning</span></div>
+                                    <div class="col-md-4 mb-2"><strong>Geofencing System:</strong> <span class="badge bg-success">Active</span></div>
+                                    <div class="col-md-4 mb-2"><strong>Multi-Vessel Correlator:</strong> <span class="badge bg-success">Scanning</span></div>
+                                    <div class="col-md-6 mb-2"><strong>Speed/Course Predictor:</strong> <span class="badge bg-success">Tracking</span></div>
+                                    <div class="col-md-6 mb-2"><strong>Pattern Matcher:</strong> <span class="badge bg-success">Armed</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="refreshEnhancedDetails()">
+                    <i class="fas fa-sync-alt me-2"></i>Refresh Status
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

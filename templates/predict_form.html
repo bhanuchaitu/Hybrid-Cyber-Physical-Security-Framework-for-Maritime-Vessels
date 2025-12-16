@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+
+{% block title %}Network Analysis - Maritime IDS{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-network-wired"></i> Network Traffic Analysis
+                    </h3>
+                    <p class="mb-0 small">Enter network traffic parameters for intrusion detection</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('predict') }}" id="predictionForm">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Note:</strong> Enter 28 network features for analysis. 
+                            Default values are provided for quick testing.
+                        </div>
+
+                        <div class="row">
+                            <!-- Protocol Type -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Protocol Type (0-2)</label>
+                                <input type="number" class="form-control" name="protocol_type" 
+                                       value="1" min="0" max="2" step="1" required>
+                            </div>
+
+                            <!-- Service -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Service (0-70)</label>
+                                <input type="number" class="form-control" name="service" 
+                                       value="0" min="0" max="70" step="1" required>
+                            </div>
+
+                            <!-- Flag -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Flag (0-10)</label>
+                                <input type="number" class="form-control" name="flag" 
+                                       value="0" min="0" max="10" step="1" required>
+                            </div>
+
+                            <!-- Source Bytes -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Source Bytes</label>
+                                <input type="number" class="form-control" name="src_bytes" 
+                                       value="0" step="0.01" required>
+                            </div>
+
+                            <!-- Destination Bytes -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Destination Bytes</label>
+                                <input type="number" class="form-control" name="dst_bytes" 
+                                       value="0" step="0.01" required>
+                            </div>
+
+                            <!-- Wrong Fragment -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Wrong Fragment</label>
+                                <input type="number" class="form-control" name="wrong_fragment" 
+                                       value="0" step="0.01" required>
+                            </div>
+
+                            <!-- Hot -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Hot</label>
+                                <input type="number" class="form-control" name="hot" 
+                                       value="0" step="0.01" required>
+                            </div>
+
+                            <!-- Logged In -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Logged In</label>
+                                <input type="number" class="form-control" name="logged_in" 
+                                       value="1" min="0" max="1" step="1" required>
+                            </div>
+
+                            <!-- Num Compromised -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Num Compromised</label>
+                                <input type="number" class="form-control" name="num_compromised" 
+                                       value="0" step="0.01" required>
+                            </div>
+
+                            <!-- Count -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Count</label>
+                                <input type="number" class="form-control" name="count" 
+                                       value="0" step="0.01" required>
+                            </div>
+
+                            <!-- Srv Count -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Srv Count</label>
+                                <input type="number" class="form-control" name="srv_count" 
+                                       value="0" step="0.01" required>
+                            </div>
+
+                            <!-- Serror Rate -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Serror Rate</label>
+                                <input type="number" class="form-control" name="serror_rate" 
+                                       value="0" step="0.01" min="0" max="1" required>
+                            </div>
+
+                            <!-- Srv Serror Rate -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Srv Serror Rate</label>
+                                <input type="number" class="form-control" name="srv_serror_rate" 
+                                       value="0" step="0.01" min="0" max="1" required>
+                            </div>
+
+                            <!-- Rerror Rate -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Rerror Rate</label>
+                                <input type="number" class="form-control" name="rerror_rate" 
+                                       value="0" step="0.01" min="0" max="1" required>
+                            </div>
+
+                            <!-- Srv Rerror Rate -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Srv Rerror Rate</label>
+                                <input type="number" class="form-control" name="srv_rerror_rate" 
+                                       value="0" step="0.01" min="0" max="1" required>
+                            </div>
+
+                            <!-- Same Srv Rate -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Same Srv Rate</label>
+                                <input type="number" class="form-control" name="same_srv_rate" 
+                                       value="1" step="0.01" min="0" max="1" required>
+                            </div>
+
+                            <!-- Diff Srv Rate -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Diff Srv Rate</label>
+                                <input type="number" class="form-control" name="diff_srv_rate" 
+                                       value="0" step="0.01" min="0" max="1" required>
+                            </div>
+
+                            <!-- Srv Diff Host Rate -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Srv Diff Host Rate</label>
+                                <input type="number" class="form-control" name="srv_diff_host_rate" 
+                                       value="0" step="0.01" min="0" max="1" required>
+                            </div>
+
+                            <!-- Dst Host Count -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Dst Host Count</label>
+                                <input type="number" class="form-control" name="dst_host_count" 
+                                       value="0" step="0.01" required>
+                            </div>
+
+                            <!-- Dst Host Srv Count -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Dst Host Srv Count</label>
+                                <input type="number" class="form-control" name="dst_host_srv_count" 
+                                       value="0" step="0.01" required>
+                            </div>
+
+                            <!-- Dst Host Same Srv Rate -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Dst Host Same Srv Rate</label>
+                                <input type="number" class="form-control" name="dst_host_same_srv_rate" 
+                                       value="1" step="0.01" min="0" max="1" required>
+                            </div>
+
+                            <!-- Dst Host Diff Srv Rate -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Dst Host Diff Srv Rate</label>
+                                <input type="number" class="form-control" name="dst_host_diff_srv_rate" 
+                                       value="0" step="0.01" min="0" max="1" required>
+                            </div>
+
+                            <!-- Dst Host Same Src Port Rate -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Dst Host Same Src Port Rate</label>
+                                <input type="number" class="form-control" name="dst_host_same_src_port_rate" 
+                                       value="1" step="0.01" min="0" max="1" required>
+                            </div>
+
+                            <!-- Dst Host Srv Diff Host Rate -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Dst Host Srv Diff Host Rate</label>
+                                <input type="number" class="form-control" name="dst_host_srv_diff_host_rate" 
+                                       value="0" step="0.01" min="0" max="1" required>
+                            </div>
+
+                            <!-- Dst Host Serror Rate -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Dst Host Serror Rate</label>
+                                <input type="number" class="form-control" name="dst_host_serror_rate" 
+                                       value="0" step="0.01" min="0" max="1" required>
+                            </div>
+
+                            <!-- Dst Host Srv Serror Rate -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Dst Host Srv Serror Rate</label>
+                                <input type="number" class="form-control" name="dst_host_srv_serror_rate" 
+                                       value="0" step="0.01" min="0" max="1" required>
+                            </div>
+
+                            <!-- Dst Host Rerror Rate -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Dst Host Rerror Rate</label>
+                                <input type="number" class="form-control" name="dst_host_rerror_rate" 
+                                       value="0" step="0.01" min="0" max="1" required>
+                            </div>
+
+                            <!-- Dst Host Srv Rerror Rate -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Dst Host Srv Rerror Rate</label>
+                                <input type="number" class="form-control" name="dst_host_srv_rerror_rate" 
+                                       value="0" step="0.01" min="0" max="1" required>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-md-6 mb-2">
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-search"></i> Analyze Traffic
+                                </button>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <button type="reset" class="btn btn-secondary btn-lg w-100">
+                                    <i class="fas fa-redo"></i> Reset Form
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Quick Test Buttons -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5><i class="fas fa-flask"></i> Quick Test Scenarios</h5>
+                    <p class="text-muted">Load pre-configured test data</p>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-success" onclick="loadNormalTraffic()">
+                            Normal Traffic
+                        </button>
+                        <button type="button" class="btn btn-outline-danger" onclick="loadDoSAttack()">
+                            DoS Attack
+                        </button>
+                        <button type="button" class="btn btn-outline-warning" onclick="loadProbeAttack()">
+                            Probe Attack
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function loadNormalTraffic() {
+    // Load normal traffic pattern
+    alert('Loading normal traffic pattern...');
+}
+
+function loadDoSAttack() {
+    // Load DoS attack pattern
+    alert('Loading DoS attack pattern...');
+}
+
+function loadProbeAttack() {
+    // Load probe attack pattern
+    alert('Loading probe attack pattern...');
+}
+
+// Form submission with loading indicator
+document.getElementById('predictionForm').addEventListener('submit', function(e) {
+    const submitBtn = this.querySelector('button[type="submit"]');
+    showLoading(submitBtn);
+});
+
+function showLoading(button) {
+    button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Analyzing...';
+    button.disabled = true;
+}
+</script>
+{% endblock %}

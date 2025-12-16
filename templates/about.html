@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}About - Maritime IDS{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto text-center">
+            <h1 class="display-4 mb-4">About Maritime IDS</h1>
+            <p class="lead">
+                Advanced Cyber-Physical Security Framework for protecting maritime vessels 
+                from sophisticated cyber threats using artificial intelligence and machine learning.
+            </p>
+        </div>
+    </div>
+
+    <!-- Mission Section -->
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <h2><i class="fas fa-bullseye text-primary"></i> Our Mission</h2>
+            <p>
+                To provide maritime industry stakeholders with state-of-the-art cybersecurity 
+                solutions that protect critical vessel systems, ensure operational continuity, 
+                and safeguard maritime operations from evolving cyber threats.
+            </p>
+        </div>
+        <div class="col-lg-6">
+            <h2><i class="fas fa-eye text-success"></i> Our Vision</h2>
+            <p>
+                To become the leading cybersecurity platform for the maritime industry, 
+                setting new standards in vessel protection and creating a safer, more secure 
+                maritime ecosystem through continuous innovation.
+            </p>
+        </div>
+    </div>
+
+    <!-- Technology Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4">Technology Stack</h2>
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-brain fa-3x text-primary mb-3"></i>
+                            <h5>Machine Learning</h5>
+                            <p class="small">MLP, CNN, GRU, Hybrid models</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <i class="fab fa-python fa-3x text-success mb-3"></i>
+                            <h5>Python Stack</h5>
+                            <p class="small">TensorFlow, scikit-learn, Flask</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-database fa-3x text-info mb-3"></i>
+                            <h5>Data Processing</h5>
+                            <p class="small">Real-time analysis, NSL-KDD dataset</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-shield-alt fa-3x text-warning mb-3"></i>
+                            <h5>Security</h5>
+                            <p class="small">Encryption, authentication, monitoring</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4">Key Capabilities</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success"></i>
+                            Real-time network traffic monitoring
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success"></i>
+                            Multi-model ML ensemble for high accuracy
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success"></i>
+                            Automated threat detection and classification
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success"></i>
+                            Instant alert generation and notification
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success"></i>
+                            Maritime-specific threat intelligence
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success"></i>
+                            Comprehensive audit logs and reporting
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success"></i>
+                            RESTful API for system integration
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success"></i>
+                            Compliance with maritime regulations
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Section -->
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card bg-light">
+                <div class="card-body text-center p-5">
+                    <h3>Get Started Today</h3>
+                    <p class="mb-4">
+                        Protect your maritime assets with our advanced intrusion detection system
+                    </p>
+                    <a href="{{ url_for('logon') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-rocket"></i> Create Free Account
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

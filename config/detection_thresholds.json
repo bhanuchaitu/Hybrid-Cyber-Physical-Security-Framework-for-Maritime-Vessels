@@ -1,0 +1,69 @@
+{
+  "gps": {
+    "max_speed_knots": 35.0,
+    "max_acceleration_knots_per_sec": 0.1,
+    "position_jump_threshold_km": 100.0,
+    "min_time_between_positions_sec": 1.0,
+    "speed_threshold_multiplier": 1.5
+  },
+  "ais": {
+    "mmsi_validation": {
+      "check_pattern": true,
+      "check_country_code": true,
+      "allow_test_mmsi": false
+    },
+    "speed_limits": {
+      "cargo": 25.0,
+      "tanker": 20.0,
+      "passenger": 30.0,
+      "fishing": 15.0,
+      "tug": 12.0,
+      "unknown": 20.0
+    },
+    "heading_mismatch_threshold_degrees": 45.0,
+    "anomaly_confidence_threshold": 0.3
+  },
+  "nmea": {
+    "require_checksum": true,
+    "allow_proprietary_sentences": true,
+    "high_risk_commands": [
+      "ROT",
+      "RMB",
+      "APB",
+      "APA"
+    ],
+    "risk_scoring": {
+      "invalid_checksum": 0.8,
+      "malformed_structure": 0.7,
+      "high_risk_command": 0.6,
+      "proprietary_sentence": 0.3,
+      "unknown_sentence_type": 0.2
+    },
+    "risk_threshold": 0.5
+  },
+  "ids": {
+    "threat_levels": {
+      "critical": 0.8,
+      "high": 0.6,
+      "medium": 0.4,
+      "low": 0.2
+    },
+    "cross_layer_correlation": {
+      "enabled": true,
+      "min_layers_for_critical": 3,
+      "confidence_boost_per_layer": 0.1
+    },
+    "attack_classification": {
+      "gps_spoofing": {
+        "min_position_jump_km": 50.0,
+        "min_speed_violation_multiplier": 1.5
+      },
+      "ais_spoofing": {
+        "min_mmsi_violations": 1
+      },
+      "nmea_injection": {
+        "min_risk_score": 0.5
+      }
+    }
+  }
+}
